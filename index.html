@@ -1,0 +1,182 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PG Meme Upload</title>
+
+<style>
+body{
+font-family:Arial;
+background:#111;
+color:white;
+text-align:center;
+}
+
+h1{
+color:#00ffcc;
+}
+
+#uploadBox{
+border:3px dashed #00ffcc;
+padding:30px;
+margin:20px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+background:#00ffcc;
+border:none;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover{
+background:#00cca3;
+}
+
+video,img{
+max-width:320px;
+margin:10px;
+border-radius:10px;
+}
+
+.section{
+margin-top:40px;
+}
+
+.meme{
+background:#222;
+padding:15px;
+margin:10px;
+border-radius:10px;
+display:inline-block;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📦 PG Meme Upload</h1>
+
+<div id="uploadBox">
+
+<input type="file" id="fileInput" accept="image/*,video/mp4">
+
+<br><br>
+
+<input type="text" id="title" placeholder="Meme title (PG only)">
+
+<br><br>
+
+<button onclick="uploadMeme()">Upload Meme</button>
+
+</div>
+
+<div class="section">
+<h2>🎬 Videos</h2>
+<div id="videoArea"></div>
+</div>
+
+<div class="section">
+<h2>😂 GIFs</h2>
+<div id="gifArea"></div>
+</div>
+
+<div class="section">
+<h2>🖼 Images</h2>
+<div id="imageArea"></div>
+</div>
+
+<script>
+
+let bannedWords = ["badword","swear","nsfw"]
+
+function uploadMeme(){
+
+let file = document.getElementById("fileInput").files[0]
+let title = document.getElementById("title").value.toLowerCase()
+
+if(!file){
+alert("Upload a file first")
+return
+}
+
+if(file.size > 10000000){
+alert("File too big (10MB max)")
+return
+}
+
+for(let word of bannedWords){
+if(title.includes(word)){
+alert("Title must be PG")
+return
+}
+}
+
+let reader = new FileReader()
+
+reader.onload = function(e){
+
+let memeDiv = document.createElement("div")
+memeDiv.className="meme"
+
+let media
+let area
+
+if(file.type === "image/gif"){
+
+media = document.createElement("img")
+media.src = e.target.result
+area = document.getElementById("gifArea")
+
+}
+
+else if(file.type.startsWith("image")){
+
+media = document.createElement("img")
+media.src = e.target.result
+area = document.getElementById("imageArea")
+
+}
+
+else{
+
+media = document.createElement("video")
+media.src = e.target.result
+media.controls = true
+area = document.getElementById("videoArea")
+
+}
+
+let downloadBtn = document.createElement("button")
+downloadBtn.innerText="Download"
+
+downloadBtn.onclick = function(){
+
+let a = document.createElement("a")
+a.href = e.target.result
+a.download = file.name
+a.click()
+
+}
+
+memeDiv.innerHTML="<h3>"+title+"</h3>"
+memeDiv.appendChild(media)
+memeDiv.appendChild(document.createElement("br"))
+memeDiv.appendChild(downloadBtn)
+
+area.appendChild(memeDiv)
+
+}
+
+reader.readAsDataURL(file)
+
+}
+
+</script>
+
+</body>
+</html>
+```
